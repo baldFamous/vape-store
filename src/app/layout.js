@@ -1,4 +1,5 @@
 import "./globals.css";
+import { CartProvider } from "@/context/CartContext";
 
 export const metadata = {
   title: "Muestra visual Prototype",
@@ -15,7 +16,9 @@ export default function RootLayout({ children }) {
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       </head>
       <body>
-        {children}
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );

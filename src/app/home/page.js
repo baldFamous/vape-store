@@ -152,7 +152,7 @@ export default function EditorialHome() {
                     </div>
                 </section>
 
-                {/* Recommended Products */}
+                {/* Recommended Products 
                 <section className="py-24 px-8 md:px-20 bg-background">
                     <div className="max-w-7xl mx-auto">
                         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
@@ -190,7 +190,7 @@ export default function EditorialHome() {
                             ))}
                         </div>
                     </div>
-                </section>
+                </section>*/}
             </main>
             <Footer />
         </div>
