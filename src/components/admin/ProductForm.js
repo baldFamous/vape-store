@@ -12,10 +12,11 @@ export default function ProductForm({ initialData = null }) {
         sku: initialData?.sku || "",
         name: initialData?.name || "",
         category: initialData?.category || "E-Liquid",
+        brand: initialData?.brand || "",
         price: initialData?.price || 0,
         image_url: initialData?.image_url || "",
         description: initialData?.description || "",
-        is_new: initialData?.is_new || false,
+        is_active: initialData ? initialData.is_active : true, // true by default for new items
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -107,6 +108,18 @@ export default function ProductForm({ initialData = null }) {
                 </div>
 
                 <div className="space-y-2">
+                    <label className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Marca (Opcional)</label>
+                    <input 
+                        type="text" 
+                        name="brand" 
+                        value={formData.brand} 
+                        onChange={handleChange}
+                        className="w-full bg-surface-container-highest border border-outline-variant/30 rounded-lg px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors"
+                        placeholder="Ej. Voopoo, Nasty Juice"
+                    />
+                </div>
+
+                <div className="space-y-2">
                     <label className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Precio (CLP)</label>
                     <input 
                         type="number" 
@@ -149,14 +162,14 @@ export default function ProductForm({ initialData = null }) {
             <div className="flex items-center gap-3 pt-2">
                 <input 
                     type="checkbox" 
-                    id="is_new"
-                    name="is_new" 
-                    checked={formData.is_new}
+                    id="is_active"
+                    name="is_active" 
+                    checked={formData.is_active}
                     onChange={handleChange}
                     className="w-5 h-5 accent-primary rounded cursor-pointer"
                 />
-                <label htmlFor="is_new" className="text-sm font-bold text-on-surface cursor-pointer">
-                    Marcar como 'Nuevo' (Etiqueta de novedad)
+                <label htmlFor="is_active" className="text-sm font-bold text-on-surface cursor-pointer">
+                    Activar Producto (Mostrar en tienda)
                 </label>
             </div>
 

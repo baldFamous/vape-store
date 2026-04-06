@@ -3,7 +3,7 @@
 import { useCart } from "@/context/CartContext";
 import { useState } from "react";
 
-export default function ProductCard({ p, index }) {
+export default function ProductCard({ p, index, onClick }) {
     const { addToCart } = useCart();
     const [added, setAdded] = useState(false);
 
@@ -18,7 +18,9 @@ export default function ProductCard({ p, index }) {
     };
 
     return (
-        <div className="group relative bg-[#1c1a1e]/40 backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden transition-all duration-700 hover:border-[#dfb7ff]/40 hover:shadow-[0_0_40px_rgba(223,183,255,0.15)] hover:-translate-y-3 cursor-pointer"
+        <div 
+             onClick={() => onClick(p)}
+             className="group relative bg-[#1c1a1e]/40 backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden transition-all duration-700 hover:border-[#dfb7ff]/40 hover:shadow-[0_0_40px_rgba(223,183,255,0.15)] hover:-translate-y-3 cursor-pointer"
              style={{animationDelay: `${index * 100}ms`}}>
             {p.is_new && (
                 <div className="absolute top-4 right-4 z-20">
@@ -31,13 +33,6 @@ export default function ProductCard({ p, index }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#131315] via-transparent to-transparent z-10 opacity-90 group-hover:opacity-60 transition-opacity duration-700"></div>
                 
                 <img alt={p.name} className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 group-hover:rotate-1" src={p.image_url}/>
-                
-                {/* Quick action button revealed on hover */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-all duration-500 scale-75 group-hover:scale-100">
-                    <button className="w-14 h-14 bg-black/50 backdrop-blur-md text-white rounded-full flex items-center justify-center border border-white/20 hover:bg-[#dfb7ff] hover:text-black hover:border-transparent transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-                        <span className="material-symbols-outlined text-2xl">visibility</span>
-                    </button>
-                </div>
                 
                 {/* Add to cart panel sliding up */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 z-20 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out bg-gradient-to-t from-black/80 via-black/50 to-transparent">

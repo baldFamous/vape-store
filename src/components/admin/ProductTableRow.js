@@ -45,10 +45,10 @@ export default function ProductTableRow({ product }) {
                 <div className="text-sm font-bold text-on-surface">${product.price.toLocaleString('es-CL')}</div>
             </td>
             <td className="px-6 py-5">
-                {product.is_new ? (
-                    <span className="px-2 py-1 text-[10px] font-bold bg-primary/20 text-primary rounded-full uppercase tracking-wider">Nuevo</span>
+                {product.is_active ? (
+                    <span className="px-2 py-1 text-[10px] font-bold bg-green-500/20 text-green-400 rounded-full uppercase tracking-wider">Activo</span>
                 ) : (
-                    <span className="text-[10px] text-on-surface-variant uppercase tracking-wider">Estándar</span>
+                    <span className="px-2 py-1 text-[10px] font-bold bg-error/20 text-error rounded-full uppercase tracking-wider">Inactivo</span>
                 )}
             </td>
             <td className="px-6 py-5 text-right">
