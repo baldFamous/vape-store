@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import ProductCard from "@/components/ProductCard";
 import ProductModal from "@/components/ProductModal";
+
+const ITEMS_PER_PAGE = 15;
 
 export default function ProductCatalog({ products }) {
     // 1. Base filtering: Only Active Products
@@ -10,7 +12,7 @@ export default function ProductCatalog({ products }) {
         return products.filter(p => p.is_active !== false); // fallback to true if undefined
     }, [products]);
 
-    // 2. Categories
+    // 2. Categories & Brands
     const availableCategories = useMemo(() => {
         const catSet = new Set(activeProducts.map(p => p.category).filter(Boolean));
         return Array.from(catSet).sort();
@@ -18,6 +20,7 @@ export default function ProductCatalog({ products }) {
 
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedBrands, setSelectedBrands] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
     
     // Manage Modal Set
     const [selectedProduct, setSelectedProduct] = useState(null);
@@ -28,8 +31,9 @@ export default function ProductCatalog({ products }) {
                 ? prev.filter(c => c !== cat)
                 : [...prev, cat]
         );
-        // Clear brand filters when switching categories to prevent zero-results logic issues
+        // Clear brand filters when switching categories to prevent zero-results
         setSelectedBrands([]); 
+        setCurrentPage(1); // Reset page on filter change
     };
 
     const toggleBrand = (brand) => {
@@ -38,9 +42,10 @@ export default function ProductCatalog({ products }) {
                 ? prev.filter(b => b !== brand)
                 : [...prev, brand]
         );
+        setCurrentPage(1); // Reset page on filter change
     };
 
-    // 3. Dependent Brands (Brands available on the currently filtered categories)
+    // 3. Dependent Brands
     const availableBrands = useMemo(() => {
         let tempProducts = activeProducts;
         if (selectedCategories.length > 0) {
@@ -59,8 +64,23 @@ export default function ProductCatalog({ products }) {
         });
     }, [activeProducts, selectedCategories, selectedBrands]);
 
+    // 5. Pagination Logic
+    const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+    
+    // Ensure current page is valid when deleting items or over-filtering
+    useEffect(() => {
+        if (currentPage > totalPages && totalPages > 0) {
+            setCurrentPage(totalPages);
+        }
+    }, [totalPages, currentPage]);
+
+    const paginatedProducts = useMemo(() => {
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        return filteredProducts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    }, [filteredProducts, currentPage]);
+
     return (
-        <main className="flex-grow pt-32 pb-20 px-8 max-w-7xl mx-auto flex flex-col md:flex-row gap-12 w-full">
+        <main className="flex-grow pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto flex flex-col md:flex-row gap-8 md:gap-12 w-full">
             {/* Sidebar Filters */}
             <aside className="w-full md:w-64 space-y-10 flex-shrink-0">
                 <div>
@@ -128,21 +148,21 @@ export default function ProductCatalog({ products }) {
             </aside>
             
             {/* Product Grid */}
-            <section className="flex-1">
-                <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <section className="flex-1 flex flex-col">
+                <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
-                        <h1 className="headline-font text-4xl md:text-5xl font-extrabold tracking-tight mb-2 text-transparent bg-clip-text bg-gradient-to-r from-[#dfb7ff] to-[#a37bb7]">Descubre el Catálogo</h1>
+                        <h1 className="headline-font text-3xl md:text-5xl font-extrabold tracking-tight mb-2 text-transparent bg-clip-text bg-gradient-to-r from-[#dfb7ff] to-[#a37bb7]">Descubre el Catálogo</h1>
                         <p className="text-on-surface-variant text-sm">
                             {selectedCategories.length > 0 || selectedBrands.length > 0
-                                ? `Mostrando resultados filtrados`
-                                : "Explora nuestra selección curada de hardware premium y mezclas artesanales."
+                                ? `Mostrando ${filteredProducts.length} resultados filtrados`
+                                : `Explora nuestra selección curada de ${activeProducts.length} productos premium.`
                             }
                         </p>
                     </div>
                 </header>
                 
                 {filteredProducts.length === 0 ? (
-                    <div className="flex justify-center items-center py-20 bg-surface-container-low/30 rounded-2xl border border-outline-variant/10">
+                    <div className="flex-1 flex justify-center items-center py-20 bg-surface-container-low/30 rounded-2xl border border-outline-variant/10">
                         <div className="text-center">
                             <span className="material-symbols-outlined text-5xl text-outline mb-3">production_quantity_limits</span>
                             <h3 className="font-headline text-xl text-on-surface mb-1">No hay productos en esta categoría</h3>
@@ -150,16 +170,59 @@ export default function ProductCatalog({ products }) {
                         </div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {filteredProducts.map((p, i) => (
-                            <ProductCard 
-                                key={p.id} 
-                                p={p} 
-                                index={i} 
-                                onClick={(prod) => setSelectedProduct(prod)}
-                            />
-                        ))}
-                    </div>
+                    <>
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8 flex-1">
+                            {paginatedProducts.map((p, i) => (
+                                <ProductCard 
+                                    key={p.id} 
+                                    p={p} 
+                                    index={i} 
+                                    onClick={(prod) => setSelectedProduct(prod)}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                            <div className="mt-12 flex justify-center items-center gap-2">
+                                <button 
+                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                    disabled={currentPage === 1}
+                                    className="p-2 rounded-lg border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container hover:text-on-surface disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                                >
+                                    <span className="material-symbols-outlined text-sm">chevron_left</span>
+                                </button>
+                                
+                                <div className="flex gap-2">
+                                    {Array.from({ length: totalPages }).map((_, i) => {
+                                        const page = i + 1;
+                                        const isCurrent = page === currentPage;
+                                        return (
+                                            <button 
+                                                key={page}
+                                                onClick={() => setCurrentPage(page)}
+                                                className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors ${
+                                                    isCurrent 
+                                                    ? 'bg-primary text-on-primary shadow-lg shadow-primary/20' 
+                                                    : 'border border-outline-variant/30 text-on-surface hover:bg-surface-container'
+                                                }`}
+                                            >
+                                                {page}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                <button 
+                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="p-2 rounded-lg border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container hover:text-on-surface disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                                >
+                                    <span className="material-symbols-outlined text-sm">chevron_right</span>
+                                </button>
+                            </div>
+                        )}
+                    </>
                 )}
             </section>
 

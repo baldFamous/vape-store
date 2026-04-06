@@ -26,7 +26,7 @@ export default function CartPage() {
                         <span className="material-symbols-outlined text-6xl text-outline-variant mb-4">production_quantity_limits</span>
                         <h2 className="text-2xl font-headline text-on-surface mb-2">Tu carrito está vacío</h2>
                         <p className="text-on-surface-variant mb-8">Parece que aún no has agregado nada al carrito.</p>
-                        <Link href="/" className="px-6 py-3 bg-primary text-on-primary rounded-lg font-headline font-bold hover:bg-primary/90 transition-colors">
+                        <Link href="/productos" className="px-6 py-3 bg-primary text-on-primary rounded-lg font-headline font-bold hover:bg-primary/90 transition-colors">
                             Volver a la tienda
                         </Link>
                     </div>

@@ -42,7 +42,7 @@ export default async function AdminDashboard() {
                         <h1 className="text-3xl font-extrabold tracking-tight font-headline text-on-surface">Gestión de Catálogo</h1>
                     </div>
                     <div className="flex items-center gap-4">
-                        <Link href="/" className="text-sm border border-outline px-3 py-1 rounded text-on-surface-variant hover:text-on-surface transition-colors">Volver a la Tienda</Link>
+                        <Link href="/productos" className="text-sm border border-outline px-3 py-1 rounded text-on-surface-variant hover:text-on-surface transition-colors">Volver a la Tienda</Link>
                         <Link href="/admin/products/new" className="text-sm font-bold bg-primary text-on-primary px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
                             <span className="material-symbols-outlined text-[18px]">add</span>
                             Añadir Producto
